@@ -1,5 +1,5 @@
 function App() {
-  return <div>회원목록</div>;
+  return <div className="font-bold font-pretendard">회원목록</div>;
 }
 
 export default App;
