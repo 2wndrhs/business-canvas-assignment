@@ -1,5 +1,14 @@
 import { MoreOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Flex, Layout, Table, TableColumnsType, TableColumnType, Typography } from 'antd';
+import {
+  Button,
+  Checkbox,
+  Flex,
+  Layout,
+  Table,
+  TableColumnsType,
+  TableColumnType,
+  Typography,
+} from 'antd';
 import { useState } from 'react';
 
 type FieldKey = 'name' | 'address' | 'memo' | 'registrationDate' | 'occupation' | 'emailConsent';
@@ -102,7 +111,7 @@ function App() {
 
   const columns: TableColumnsType<DataType> = [
     ...MEMBER_FIELDS.map<TableColumnType<DataType>>((field) => {
-      return {
+      const column: TableColumnType<DataType> = {
         title: field.label,
         dataIndex: field.key,
         filters: getFiltersForField(field),
@@ -114,6 +123,13 @@ function App() {
           return record[field.key] === value;
         },
       };
+
+      // 이메일 수신 동의 필드라면 Checkbox 렌더링
+      if (field.key === 'emailConsent') {
+        column.render = (value: boolean) => <Checkbox checked={value} />;
+      }
+
+      return column;
     }),
     {
       title: '',
