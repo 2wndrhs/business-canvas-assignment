@@ -41,7 +41,14 @@ export default function MemberModal({
 
   useEffect(() => {
     if (open) {
-      form.setFieldValue('occupation', '개발자');
+      form.setFieldsValue({
+        name: '',
+        address: '',
+        memo: '',
+        registrationDate: '',
+        occupation: '개발자',
+        emailConsent: false,
+      });
 
       if (initialValues) {
         const values = { ...initialValues };
@@ -65,7 +72,7 @@ export default function MemberModal({
     );
 
     onSave(formattedValues);
-    onOpenChange(false); // 모달 닫기
+    onOpenChange(false);
     form.resetFields();
   };
 
