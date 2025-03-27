@@ -11,38 +11,42 @@ import {
   Typography,
 } from 'antd';
 import { useState } from 'react';
-import { INITIAL_RECORDS, MEMBER_FIELDS } from './constants';
+import { MEMBER_FIELDS } from './constants';
 import MemberModal from './MemberModal';
+import { createStorageService } from './services/storage';
 import { Field, RecordType } from './types/member.type';
+
+// 스토리지 서비스 생성
+const storageService = createStorageService();
 
 function App() {
   const [open, setOpen] = useState(false);
-
-  const [records, setRecords] = useState<RecordType[]>(INITIAL_RECORDS);
+  const [records, setRecords] = useState<RecordType[]>(() => storageService.getRecords());
   const [currentRecord, setCurrentRecord] = useState<RecordType | null>(null);
-
-  const handleDeleteRecord = (recordToDelete: RecordType) => {
-    const updatedRecords = records.filter((record) => record.key !== recordToDelete.key);
-    setRecords(updatedRecords);
-  };
 
   const handleSaveRecord = (recordToSave: RecordType) => {
     if (currentRecord) {
       // 기존 레코드 수정
-      const updatedRecords = records.map((record) => {
-        if (record.key === currentRecord.key) {
-          return { ...recordToSave, key: record.key };
-        }
-        return record;
-      });
+      const recordToUpdate: RecordType = {
+        ...recordToSave,
+        key: currentRecord.key,
+      };
 
-      setRecords(updatedRecords);
+      storageService.updateRecord(recordToUpdate);
     } else {
       // 새 레코드 추가
       const newKey = Math.max(...records.map((record) => record.key)) + 1;
       const newRecord = { ...recordToSave, key: newKey };
-      setRecords([...records, newRecord]);
+
+      storageService.addRecord(newRecord);
     }
+
+    setRecords(storageService.getRecords());
+  };
+
+  const handleDeleteRecord = (recordToDelete: RecordType) => {
+    storageService.deleteRecord(recordToDelete.key);
+    setRecords(storageService.getRecords());
   };
 
   const getFiltersForField = (field: Field) => {
