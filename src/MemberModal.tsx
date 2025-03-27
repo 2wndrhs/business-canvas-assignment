@@ -1,6 +1,6 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Checkbox, DatePicker, Flex, Form, Input, Modal, Select, Typography } from 'antd';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { MEMBER_FIELDS } from './constants';
 import { DataType, Field, FieldType } from './types/member.type';
 
@@ -27,14 +27,27 @@ interface MemberModalProps {
 
 export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
   const [form] = Form.useForm<DataType>();
+  const fields = Form.useWatch([], form);
+  const [submittable, setSubmittable] = useState(false);
 
   useEffect(() => {
-    form.setFieldValue('occupation', '개발자');
-  }, [form]);
+    if (open) {
+      form.setFieldValue('occupation', '개발자');
+    }
+  }, [form, open]);
+
+  useEffect(() => {
+    form
+      .validateFields({ validateOnly: true })
+      .then(() => setSubmittable(true))
+      .catch(() => setSubmittable(false));
+  }, [form, fields]);
 
   const handleSubmit = (fields) => {
     fields.registrationDate = fields.registrationDate.format('YYYY-MM-DD');
+    console.log(fields);
     onOpenChange(false); // 모달 닫기
+    form.resetFields();
   };
 
   return (
@@ -47,8 +60,13 @@ export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
       cancelText="취소"
       closeIcon={<CloseOutlined />}
       onOk={() => form.submit()}
-      onCancel={() => onOpenChange(false)}
-      destroyOnClose
+      okButtonProps={{
+        disabled: !submittable,
+      }}
+      onCancel={() => {
+        onOpenChange(false);
+        form.resetFields();
+      }}
       styles={{
         content: {
           padding: 0,
@@ -78,7 +96,6 @@ export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
           </>
         )}
         onFinish={handleSubmit}
-        clearOnDestroy
       >
         <Flex vertical gap={20}>
           {MEMBER_FIELDS.map((field) => (
@@ -88,6 +105,7 @@ export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
               name={field.key}
               valuePropName={field.key === 'emailConsent' ? 'checked' : undefined}
               required={field.required}
+              rules={[{ required: field.required, message: `${field.label}을 입력해주세요.` }]}
               label={
                 <Typography.Text className="text-territory text-base font-semibold">
                   {field.label}
