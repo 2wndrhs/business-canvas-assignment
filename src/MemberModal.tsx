@@ -1,8 +1,9 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Checkbox, DatePicker, Flex, Form, Input, Modal, Select, Typography } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
 import { ReactNode, useEffect, useState } from 'react';
 import { MEMBER_FIELDS } from './constants';
-import { DataType, Field, FieldType } from './types/member.type';
+import { Field, FieldType, RecordType } from './types/member.type';
 
 const FIELD_TYPE_COMPONENTS: Record<FieldType, (field: Field) => React.ReactNode> = {
   text: () => <Input placeholder="Input" />,
@@ -23,18 +24,25 @@ const FIELD_TYPE_COMPONENTS: Record<FieldType, (field: Field) => React.ReactNode
 interface MemberModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialValues: RecordType | null;
 }
 
-export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
-  const [form] = Form.useForm<DataType>();
+export default function MemberModal({ open, onOpenChange, initialValues }: MemberModalProps) {
+  const [form] = Form.useForm<RecordType>();
   const fields = Form.useWatch([], form);
   const [submittable, setSubmittable] = useState(false);
 
   useEffect(() => {
     if (open) {
       form.setFieldValue('occupation', '개발자');
+
+      if (initialValues) {
+        const values = { ...initialValues };
+        values.registrationDate = dayjs(values.registrationDate);
+        form.setFieldsValue(values);
+      }
     }
-  }, [form, open]);
+  }, [form, open, initialValues]);
 
   useEffect(() => {
     form
@@ -43,8 +51,8 @@ export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
       .catch(() => setSubmittable(false));
   }, [form, fields]);
 
-  const handleSubmit = (fields) => {
-    fields.registrationDate = fields.registrationDate.format('YYYY-MM-DD');
+  const handleSubmit = (fields: RecordType) => {
+    fields.registrationDate = (fields.registrationDate as Dayjs).format('YYYY-MM-DD');
     console.log(fields);
     onOpenChange(false); // 모달 닫기
     form.resetFields();

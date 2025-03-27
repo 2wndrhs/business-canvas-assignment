@@ -11,33 +11,15 @@ import {
   Typography,
 } from 'antd';
 import { useState } from 'react';
-import { MEMBER_FIELDS } from './constants';
+import { INITIAL_RECORDS, MEMBER_FIELDS } from './constants';
 import MemberModal from './MemberModal';
-import { DataType, Field } from './types/member.type';
+import { Field, RecordType } from './types/member.type';
 
 function App() {
   const [open, setOpen] = useState(false);
 
-  const [records, setRecords] = useState<DataType[]>([
-    {
-      key: '1',
-      name: 'John Doe',
-      address: '서울 강남구',
-      memo: '외국인',
-      registrationDate: '2024-10-02',
-      occupation: '개발자',
-      emailConsent: true,
-    },
-    {
-      key: '2',
-      name: 'Foo Bar',
-      address: '서울 서초구',
-      memo: '한국인',
-      registrationDate: '2024-10-01',
-      occupation: 'PO',
-      emailConsent: false,
-    },
-  ]);
+  const [records, setRecords] = useState<RecordType[]>(INITIAL_RECORDS);
+  const [currentRecord, setCurrentRecord] = useState<RecordType | null>(null);
 
   const getFiltersForField = (field: Field) => {
     if (field.key === 'emailConsent') {
@@ -55,9 +37,9 @@ function App() {
       .map((value) => ({ text: value, value }));
   };
 
-  const columns: TableColumnsType<DataType> = [
-    ...MEMBER_FIELDS.map<TableColumnType<DataType>>((field) => {
-      const column: TableColumnType<DataType> = {
+  const columns: TableColumnsType<RecordType> = [
+    ...MEMBER_FIELDS.map<TableColumnType<RecordType>>((field) => {
+      const column: TableColumnType<RecordType> = {
         title: field.label,
         dataIndex: field.key,
         filters: getFiltersForField(field),
@@ -88,7 +70,10 @@ function App() {
               {
                 key: 'edit',
                 label: <Typography.Text>수정</Typography.Text>,
-                onClick: () => setOpen(true),
+                onClick: () => {
+                  setCurrentRecord(record);
+                  setOpen(true);
+                },
               },
               {
                 type: 'divider',
@@ -114,7 +99,14 @@ function App() {
       <Layout.Header className="flex h-12 items-center justify-center bg-white px-3.5">
         <Flex justify="space-between" align="center" className="flex-1">
           <Typography.Title className="mb-0 text-base font-semibold">회원 목록</Typography.Title>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setOpen(true)}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setCurrentRecord(null);
+              setOpen(true);
+            }}
+          >
             추가
           </Button>
         </Flex>
@@ -131,7 +123,7 @@ function App() {
           }}
         />
       </Layout.Content>
-      <MemberModal open={open} onOpenChange={setOpen} />
+      <MemberModal open={open} onOpenChange={setOpen} initialValues={currentRecord} />
     </Layout>
   );
 }

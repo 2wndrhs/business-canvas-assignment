@@ -1,3 +1,5 @@
+import { Dayjs } from 'dayjs';
+
 export type FieldKey =
   | 'name'
   | 'address'
@@ -16,12 +18,12 @@ export interface Field {
   options?: string[];
 }
 
-export interface DataType {
+export interface RecordType {
   key: React.Key;
   name: string;
   address: string;
   memo: string;
-  registrationDate: string;
+  registrationDate: string | Dayjs;
   occupation: OccupationType;
   emailConsent: boolean;
 }
