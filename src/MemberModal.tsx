@@ -11,7 +11,8 @@ const FIELD_TYPE_COMPONENTS: Record<FieldType, (field: Field) => React.ReactNode
   date: () => <DatePicker placeholder="Select date" />,
   select: (field) => (
     <Select
-      className="w-[85px]"
+      className="w-fit"
+      popupMatchSelectWidth={200}
       options={field.options?.map((option) => ({
         label: option,
         value: option,
