@@ -11,8 +11,8 @@ import {
   Typography,
 } from 'antd';
 import { useState } from 'react';
+import MemberModal from './components/MemberModal';
 import { MEMBER_FIELDS } from './constants';
-import MemberModal from './MemberModal';
 import { createStorageService } from './services/storage';
 import { Field, RecordType } from './types/member.type';
 

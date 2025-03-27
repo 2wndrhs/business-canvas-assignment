@@ -2,8 +2,8 @@ import { CloseOutlined } from '@ant-design/icons';
 import { Checkbox, DatePicker, Flex, Form, Input, Modal, Select, Typography } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import { ReactNode, useEffect, useState } from 'react';
-import { MEMBER_FIELDS } from './constants';
-import { Field, FieldType, RecordType } from './types/member.type';
+import { MEMBER_FIELDS } from '../constants';
+import { Field, FieldType, RecordType } from '../types/member.type';
 
 const FIELD_TYPE_COMPONENTS: Record<FieldType, (field: Field) => React.ReactNode> = {
   text: () => <Input placeholder="Input" />,
