@@ -2,6 +2,7 @@ import { MoreOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
+  Dropdown,
   Flex,
   Layout,
   Table,
@@ -134,7 +135,34 @@ function App() {
     {
       title: '',
       dataIndex: 'action',
-      render: () => <Button icon={<MoreOutlined />} type="text" />,
+      align: 'center',
+      render: (_, record) => (
+        <Dropdown
+          menu={{
+            items: [
+              {
+                key: 'edit',
+                label: <Typography.Text>수정</Typography.Text>,
+                onClick: () => {
+                  console.log(record);
+                },
+              },
+              {
+                type: 'divider',
+              },
+              {
+                key: 'delete',
+                label: <Typography.Text type="danger">삭제</Typography.Text>,
+                onClick: () => console.log('delete', record),
+              },
+            ],
+            className: 'min-w-45',
+          }}
+          trigger={['click']}
+        >
+          <Button icon={<MoreOutlined />} type="text" />
+        </Dropdown>
+      ),
     },
   ];
 
