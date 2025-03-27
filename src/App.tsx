@@ -11,68 +11,13 @@ import {
   Typography,
 } from 'antd';
 import { useState } from 'react';
-
-type FieldKey = 'name' | 'address' | 'memo' | 'registrationDate' | 'occupation' | 'emailConsent';
-type FieldType = 'text' | 'textarea' | 'date' | 'select' | 'checkbox';
-type OccupationType = '개발자' | 'PO' | '디자이너';
-
-interface Field {
-  key: FieldKey;
-  type: FieldType;
-  label: string;
-  required: boolean;
-}
-
-const MEMBER_FIELDS: Field[] = [
-  {
-    key: 'name',
-    type: 'text',
-    label: '이름',
-    required: true,
-  },
-  {
-    key: 'address',
-    type: 'text',
-    label: '주소',
-    required: false,
-  },
-  {
-    key: 'memo',
-    type: 'textarea',
-    label: '메모',
-    required: false,
-  },
-  {
-    key: 'registrationDate',
-    type: 'date',
-    label: '가입일',
-    required: true,
-  },
-  {
-    key: 'occupation',
-    type: 'select',
-    label: '직업',
-    required: false,
-  },
-  {
-    key: 'emailConsent',
-    type: 'checkbox',
-    label: '이메일 수신 동의',
-    required: false,
-  },
-];
-
-interface DataType {
-  key: React.Key;
-  name: string;
-  address: string;
-  memo: string;
-  registrationDate: string;
-  occupation: OccupationType;
-  emailConsent: boolean;
-}
+import { MEMBER_FIELDS } from './constants';
+import MemberModal from './MemberModal';
+import { DataType, Field } from './types/member.type';
 
 function App() {
+  const [open, setOpen] = useState(false);
+
   const [records, setRecords] = useState<DataType[]>([
     {
       key: '1',
@@ -143,9 +88,7 @@ function App() {
               {
                 key: 'edit',
                 label: <Typography.Text>수정</Typography.Text>,
-                onClick: () => {
-                  console.log(record);
-                },
+                onClick: () => setOpen(true),
               },
               {
                 type: 'divider',
@@ -171,7 +114,7 @@ function App() {
       <Layout.Header className="flex h-12 items-center justify-center bg-white px-3.5">
         <Flex justify="space-between" align="center" className="flex-1">
           <Typography.Title className="mb-0 text-base font-semibold">회원 목록</Typography.Title>
-          <Button type="primary" icon={<PlusOutlined />}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setOpen(true)}>
             추가
           </Button>
         </Flex>
@@ -188,6 +131,7 @@ function App() {
           }}
         />
       </Layout.Content>
+      <MemberModal open={open} onOpenChange={setOpen} />
     </Layout>
   );
 }

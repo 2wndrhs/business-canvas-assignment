@@ -4,4 +4,6 @@
 
 @theme {
   --font-pretendard: 'Pretendard Variable', sans-serif;
+  --color-territory: #00000073;
+  --color-error: #ff4d4f;
 }
