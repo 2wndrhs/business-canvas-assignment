@@ -26,6 +26,25 @@ function App() {
     setRecords(updatedRecords);
   };
 
+  const handleSaveRecord = (recordToSave: RecordType) => {
+    if (currentRecord) {
+      // 기존 레코드 수정
+      const updatedRecords = records.map((record) => {
+        if (record.key === currentRecord.key) {
+          return { ...recordToSave, key: record.key };
+        }
+        return record;
+      });
+
+      setRecords(updatedRecords);
+    } else {
+      // 새 레코드 추가
+      const newKey = Math.max(...records.map((record) => record.key)) + 1;
+      const newRecord = { ...recordToSave, key: newKey };
+      setRecords([...records, newRecord]);
+    }
+  };
+
   const getFiltersForField = (field: Field) => {
     if (field.key === 'emailConsent') {
       return [
@@ -130,7 +149,12 @@ function App() {
           }}
         />
       </Layout.Content>
-      <MemberModal open={open} onOpenChange={setOpen} initialValues={currentRecord} />
+      <MemberModal
+        open={open}
+        onOpenChange={setOpen}
+        initialValues={currentRecord}
+        onSave={handleSaveRecord}
+      />
     </Layout>
   );
 }

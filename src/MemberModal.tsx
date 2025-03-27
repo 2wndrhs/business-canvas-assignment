@@ -25,11 +25,17 @@ interface MemberModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialValues: RecordType | null;
+  onSave: (record: RecordType) => void;
 }
 
-export default function MemberModal({ open, onOpenChange, initialValues }: MemberModalProps) {
+export default function MemberModal({
+  open,
+  onOpenChange,
+  initialValues,
+  onSave,
+}: MemberModalProps) {
   const [form] = Form.useForm<RecordType>();
-  const fields = Form.useWatch([], form);
+  const values = Form.useWatch([], form);
   const [submittable, setSubmittable] = useState(false);
 
   useEffect(() => {
@@ -49,11 +55,15 @@ export default function MemberModal({ open, onOpenChange, initialValues }: Membe
       .validateFields({ validateOnly: true })
       .then(() => setSubmittable(true))
       .catch(() => setSubmittable(false));
-  }, [form, fields]);
+  }, [form, values]);
 
-  const handleSubmit = (fields: RecordType) => {
-    fields.registrationDate = (fields.registrationDate as Dayjs).format('YYYY-MM-DD');
-    console.log(fields);
+  const handleSubmit = (values: RecordType) => {
+    const formattedValues = { ...values };
+    formattedValues.registrationDate = (formattedValues.registrationDate as Dayjs).format(
+      'YYYY-MM-DD',
+    );
+
+    onSave(formattedValues);
     onOpenChange(false); // 모달 닫기
     form.resetFields();
   };

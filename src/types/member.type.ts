@@ -19,7 +19,7 @@ export interface Field {
 }
 
 export interface RecordType {
-  key: React.Key;
+  key: number;
   name: string;
   address: string;
   memo: string;

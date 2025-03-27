@@ -42,7 +42,7 @@ export const MEMBER_FIELDS: Field[] = [
 
 export const INITIAL_RECORDS: RecordType[] = [
   {
-    key: '1',
+    key: 1,
     name: 'John Doe',
     address: '서울 강남구',
     memo: '외국인',
@@ -51,7 +51,7 @@ export const INITIAL_RECORDS: RecordType[] = [
     emailConsent: true,
   },
   {
-    key: '2',
+    key: 2,
     name: 'Foo Bar',
     address: '서울 서초구',
     memo: '한국인',
