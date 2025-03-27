@@ -6,11 +6,12 @@ class InMemoryStorage implements StorageService {
   private records = [...INITIAL_RECORDS];
 
   getRecords() {
-    return this.records;
+    return [...this.records];
   }
 
   addRecord(record: RecordType) {
     this.records.push(record);
+    return [...this.records];
   }
 
   updateRecord(recordToUpdate: RecordType) {
@@ -21,10 +22,13 @@ class InMemoryStorage implements StorageService {
 
       return record;
     });
+
+    return [...this.records];
   }
 
   deleteRecord(key: number) {
     this.records = this.records.filter((record) => record.key !== key);
+    return [...this.records];
   }
 }
 
@@ -47,6 +51,7 @@ class LocalStorage implements StorageService {
     const records = this.getRecords();
     records.push(record);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(records));
+    return [...records];
   }
 
   updateRecord(recordToUpdate: RecordType) {
@@ -60,11 +65,13 @@ class LocalStorage implements StorageService {
     });
 
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedRecords));
+    return [...updatedRecords];
   }
 
   deleteRecord(key: number) {
     const records = this.getRecords().filter((record) => record.key !== key);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(records));
+    return [...records];
   }
 }
 

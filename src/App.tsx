@@ -45,8 +45,8 @@ function App() {
   };
 
   const handleDeleteRecord = (recordToDelete: RecordType) => {
-    storageService.deleteRecord(recordToDelete.key);
-    setRecords(storageService.getRecords());
+    const records = storageService.deleteRecord(recordToDelete.key);
+    setRecords(records);
   };
 
   const getFiltersForField = (field: Field) => {
@@ -153,6 +153,7 @@ function App() {
           }}
         />
       </Layout.Content>
+
       <MemberModal
         open={open}
         onOpenChange={setOpen}
