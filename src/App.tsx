@@ -1,5 +1,6 @@
 import { MoreOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Flex, Layout, Table, TableColumnsType, Typography } from 'antd';
+import { Button, Flex, Layout, Table, TableColumnsType, TableColumnType, Typography } from 'antd';
+import { useState } from 'react';
 
 type FieldKey = 'name' | 'address' | 'memo' | 'registrationDate' | 'occupation' | 'emailConsent';
 type FieldType = 'text' | 'textarea' | 'date' | 'select' | 'checkbox';
@@ -61,42 +62,66 @@ interface DataType {
   emailConsent: boolean;
 }
 
-const columns: TableColumnsType<DataType> = [
-  ...MEMBER_FIELDS.map((field) => {
-    return {
-      title: field.label,
-      dataIndex: field.key,
-    };
-  }),
-  {
-    title: '',
-    key: 'action',
-    render: () => <Button icon={<MoreOutlined />} type="text" />,
-  },
-];
-
-const data: DataType[] = [
-  {
-    key: '1',
-    name: 'John Doe',
-    address: '서울 강남구',
-    memo: '외국인',
-    registrationDate: '2024-10-02',
-    occupation: '개발자',
-    emailConsent: true,
-  },
-  {
-    key: '2',
-    name: 'Foo Bar',
-    address: '서울 서초구',
-    memo: '한국인',
-    registrationDate: '2024-10-01',
-    occupation: 'PO',
-    emailConsent: false,
-  },
-];
-
 function App() {
+  const [records, setRecords] = useState<DataType[]>([
+    {
+      key: '1',
+      name: 'John Doe',
+      address: '서울 강남구',
+      memo: '외국인',
+      registrationDate: '2024-10-02',
+      occupation: '개발자',
+      emailConsent: true,
+    },
+    {
+      key: '2',
+      name: 'Foo Bar',
+      address: '서울 서초구',
+      memo: '한국인',
+      registrationDate: '2024-10-01',
+      occupation: 'PO',
+      emailConsent: false,
+    },
+  ]);
+
+  const getFiltersForField = (field: Field) => {
+    if (field.key === 'emailConsent') {
+      return [
+        { text: '선택됨', value: true },
+        { text: '선택 안함', value: false },
+      ];
+    }
+
+    const uniqueValues = Array.from(
+      new Set(records.map((record) => record[field.key])),
+    ) as string[];
+    return uniqueValues
+      .filter((value) => value.length > 0)
+      .map((value) => ({ text: value, value }));
+  };
+
+  const columns: TableColumnsType<DataType> = [
+    ...MEMBER_FIELDS.map<TableColumnType<DataType>>((field) => {
+      return {
+        title: field.label,
+        dataIndex: field.key,
+        filters: getFiltersForField(field),
+        onFilter: (value, record) => {
+          if (field.key === 'emailConsent') {
+            return record.emailConsent === value;
+          }
+
+          return record[field.key] === value;
+        },
+      };
+    }),
+    {
+      title: '',
+      dataIndex: 'action',
+      render: () => <Button icon={<MoreOutlined />} type="text" />,
+    },
+  ];
+
   return (
     <Layout className="font-pretendard">
       <Layout.Header className="flex h-12 items-center justify-center bg-white px-3.5">
@@ -111,7 +136,7 @@ function App() {
       <Layout.Content>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={records}
           pagination={false}
           size="middle"
           rowSelection={{
