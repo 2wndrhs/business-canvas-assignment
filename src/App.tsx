@@ -21,6 +21,11 @@ function App() {
   const [records, setRecords] = useState<RecordType[]>(INITIAL_RECORDS);
   const [currentRecord, setCurrentRecord] = useState<RecordType | null>(null);
 
+  const handleDeleteRecord = (recordToDelete: RecordType) => {
+    const updatedRecords = records.filter((record) => record.key !== recordToDelete.key);
+    setRecords(updatedRecords);
+  };
+
   const getFiltersForField = (field: Field) => {
     if (field.key === 'emailConsent') {
       return [
@@ -81,7 +86,9 @@ function App() {
               {
                 key: 'delete',
                 label: <Typography.Text type="danger">삭제</Typography.Text>,
-                onClick: () => console.log('delete', record),
+                onClick: () => {
+                  handleDeleteRecord(record);
+                },
               },
             ],
             className: 'min-w-45',
