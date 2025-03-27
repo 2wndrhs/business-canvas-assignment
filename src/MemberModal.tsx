@@ -1,8 +1,8 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Checkbox, DatePicker, Flex, Form, Input, Modal, Select, Typography } from 'antd';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { MEMBER_FIELDS } from './constants';
-import { Field, FieldType } from './types/member.type';
+import { DataType, Field, FieldType } from './types/member.type';
 
 const FIELD_TYPE_COMPONENTS: Record<FieldType, (field: Field) => React.ReactNode> = {
   text: () => <Input placeholder="Input" />,
@@ -11,7 +11,6 @@ const FIELD_TYPE_COMPONENTS: Record<FieldType, (field: Field) => React.ReactNode
   select: (field) => (
     <Select
       className="w-[85px]"
-      defaultValue={field.options?.[0]}
       options={field.options?.map((option) => ({
         label: option,
         value: option,
@@ -27,16 +26,29 @@ interface MemberModalProps {
 }
 
 export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
+  const [form] = Form.useForm<DataType>();
+
+  useEffect(() => {
+    form.setFieldValue('occupation', '개발자');
+  }, [form]);
+
+  const handleSubmit = (fields) => {
+    fields.registrationDate = fields.registrationDate.format('YYYY-MM-DD');
+    onOpenChange(false); // 모달 닫기
+  };
+
   return (
     <Modal
+      forceRender
       open={open}
       title={<Typography.Text>회원 추가</Typography.Text>}
       width={520}
       okText="저장"
       cancelText="취소"
       closeIcon={<CloseOutlined />}
+      onOk={() => form.submit()}
       onCancel={() => onOpenChange(false)}
-      centered={true}
+      destroyOnClose
       styles={{
         content: {
           padding: 0,
@@ -56,6 +68,7 @@ export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
       }}
     >
       <Form
+        form={form}
         layout="vertical"
         variant="outlined"
         requiredMark={(label: React.ReactNode, { required }: { required: boolean }) => (
@@ -64,6 +77,8 @@ export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
             {required && <span className="text-error ml-1">*</span>}
           </>
         )}
+        onFinish={handleSubmit}
+        clearOnDestroy
       >
         <Flex vertical gap={20}>
           {MEMBER_FIELDS.map((field) => (
@@ -71,6 +86,7 @@ export default function MemberModal({ open, onOpenChange }: MemberModalProps) {
               className="m-0"
               key={field.key}
               name={field.key}
+              valuePropName={field.key === 'emailConsent' ? 'checked' : undefined}
               required={field.required}
               label={
                 <Typography.Text className="text-territory text-base font-semibold">
