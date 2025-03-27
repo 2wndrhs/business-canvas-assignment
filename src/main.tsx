@@ -12,6 +12,7 @@ createRoot(document.getElementById('root')!).render(
         theme={{
           token: {
             fontFamily: 'inherit',
+            colorPrimary: '#4A7CFE',
           },
         }}
       >
